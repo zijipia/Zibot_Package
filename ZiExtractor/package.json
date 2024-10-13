@@ -15,6 +15,9 @@
 	"bugs": {
 		"url": "https://github.com/zijipia/Zibot_Package/issues"
 	},
+	"publishConfig": {
+		"access": "public"
+	},
 	"homepage": "https://github.com/zijipia/Zibot_Package#readme",
 	"devDependencies": {
 		"discord-player": "^6.7.1",
