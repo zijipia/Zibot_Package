@@ -7,7 +7,6 @@ import {
 	ExtractorSearchContext,
 	ExtractorStreamable,
 	Playlist,
-	Player,
 	VoiceConnection,
 } from "discord-player";
 import { Readable } from "stream";
