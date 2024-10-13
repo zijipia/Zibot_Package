@@ -1,6 +1,6 @@
 {
 	"name": "@zibot/ziextractor",
-	"version": "2.1.5",
+	"version": "2.1.6",
 	"description": "Extractor using cobalt tools and youtube-sr for discord-player v6",
 	"main": "index.js",
 	"scripts": {
@@ -18,6 +18,10 @@
 	"publishConfig": {
 		"access": "public"
 	},
+	"keywords": [
+		"@zibot/ziextractor",
+		"ziextractor"
+	],
 	"homepage": "https://github.com/zijipia/Zibot_Package#readme",
 	"devDependencies": {
 		"discord-player": "^6.7.1",
