@@ -18,5 +18,8 @@
 	"bugs": {
 		"url": "https://github.com/zijipia/Zibot_Package/issues"
 	},
+	"publishConfig": {
+		"access": "public"
+	},
 	"homepage": "https://github.com/zijipia/Zibot_Package#readme"
 }
