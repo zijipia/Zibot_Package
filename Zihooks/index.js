@@ -27,9 +27,13 @@ const useCooldowns = createSingleton(
 
 const useClient = createSingleton("Client has not been initialized. Please provide Client when calling for the first time.");
 
+const useGiveaways = createSingleton(
+	"Giveaways has not been initialized. Please provide Giveaways when calling for the first time.",
+);
 module.exports = {
 	useFunctions,
 	useCommands,
 	useCooldowns,
 	useClient,
+	useGiveaways,
 };

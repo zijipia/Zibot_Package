@@ -6,6 +6,7 @@ type ClientType = any;
 const useFunctions: (Functions?: FunctionsType) => FunctionsType;
 const useCommands: (Commands?: CommandsType) => CommandsType;
 const useCooldowns: (Cooldowns?: CooldownsType) => CooldownsType;
+const useGiveaways: (Client?: ClientType) => ClientType;
 const useClient: (Client?: ClientType) => ClientType;
 
-export = { useFunctions, useCommands, useCooldowns, useClient };
+export = { useFunctions, useCommands, useCooldowns, useClient, useGiveaways };
