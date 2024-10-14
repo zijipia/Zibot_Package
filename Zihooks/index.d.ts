@@ -1,12 +1,12 @@
-type FunctionsType = any;
-type CommandsType = any;
-type CooldownsType = any;
-type ClientType = any;
+import { Client } from "discord.js";
 
-const useFunctions: (Functions?: FunctionsType) => FunctionsType;
-const useCommands: (Commands?: CommandsType) => CommandsType;
-const useCooldowns: (Cooldowns?: CooldownsType) => CooldownsType;
-const useGiveaways: (Client?: ClientType) => ClientType;
-const useClient: (Client?: ClientType) => ClientType;
+declare class ZCollection extends Map {
+	constructor();
+}
 
-export = { useFunctions, useCommands, useCooldowns, useClient, useGiveaways };
+export function useDB(DB?: any): any;
+export function useClient(Client?: Client): Client;
+export function useCommands(Commands?: any): ZCollection;
+export function useFunctions(Functions?: any): ZCollection;
+export function useCooldowns(Cooldowns?: any): ZCollection;
+export function useGiveaways(Giveaways?: any): any;

@@ -30,10 +30,13 @@ const useClient = createSingleton("Client has not been initialized. Please provi
 const useGiveaways = createSingleton(
 	"Giveaways has not been initialized. Please provide Giveaways when calling for the first time.",
 );
+const useDB = createSingleton("Database has not been initialized. Please provide Database when calling for the first time.");
+
 module.exports = {
-	useFunctions,
-	useCommands,
-	useCooldowns,
+	useDB,
 	useClient,
+	useCommands,
+	useFunctions,
+	useCooldowns,
 	useGiveaways,
 };

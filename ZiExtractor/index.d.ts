@@ -11,6 +11,8 @@ import {
 } from "discord-player";
 import { Readable } from "stream";
 import { Client, User } from "discord.js";
+const { EventEmitter } = require("events");
+
 interface ZiExtractorInit {
 	createStream?: (info: Track) => Promise<Readable | string>;
 }
