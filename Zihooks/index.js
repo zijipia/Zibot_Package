@@ -1,4 +1,4 @@
-function createSingleton(initializationError) {
+function createSingleton(name) {
 	let instance = null;
 
 	return (value) => {
@@ -6,35 +6,25 @@ function createSingleton(initializationError) {
 			if (value) {
 				instance = value;
 			} else {
-				throw new Error(initializationError);
+				console.error(`${name} has not been initialized. Please provide ${name} when calling for the first time.`);
+				return false;
 			}
 		}
 		return instance;
 	};
 }
-
-const useFunctions = createSingleton(
-	"Functions has not been initialized. Please provide Functions when calling for the first time.",
-);
-
-const useCommands = createSingleton(
-	"Commands has not been initialized. Please provide Commands when calling for the first time.",
-);
-
-const useCooldowns = createSingleton(
-	"Cooldowns has not been initialized. Please provide Cooldowns when calling for the first time.",
-);
-
-const useClient = createSingleton("Client has not been initialized. Please provide Client when calling for the first time.");
-
-const useGiveaways = createSingleton(
-	"Giveaways has not been initialized. Please provide Giveaways when calling for the first time.",
-);
-const useDB = createSingleton("Database has not been initialized. Please provide Database when calling for the first time.");
+const useDB = createSingleton("Database");
+const useClient = createSingleton("Client");
+const useConfig = createSingleton("Config");
+const useCommands = createSingleton("Commands");
+const useFunctions = createSingleton("Functions");
+const useCooldowns = createSingleton("Cooldowns");
+const useGiveaways = createSingleton("Giveaways");
 
 module.exports = {
 	useDB,
 	useClient,
+	useConfig,
 	useCommands,
 	useFunctions,
 	useCooldowns,
