@@ -20,9 +20,11 @@ const useCommands = createSingleton("Commands");
 const useFunctions = createSingleton("Functions");
 const useCooldowns = createSingleton("Cooldowns");
 const useGiveaways = createSingleton("Giveaways");
+const useUtils = createSingleton("Utils");
 
 module.exports = {
 	useDB,
+	useUtils,
 	useClient,
 	useConfig,
 	useCommands,

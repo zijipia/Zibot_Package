@@ -1,6 +1,6 @@
 {
 	"name": "@zibot/zihooks",
-	"version": "1.0.4",
+	"version": "1.0.5",
 	"description": "Hooks store commands and data",
 	"main": "index.js",
 	"scripts": {
