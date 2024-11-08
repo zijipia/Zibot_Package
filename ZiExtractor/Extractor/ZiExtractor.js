@@ -2,25 +2,41 @@ const { BaseExtractor, QueryType, Track, Playlist } = require("discord-player");
 const { unfurl } = require("unfurl.js");
 const YouTubeSR = require("youtube-sr");
 
+let retry = 0;
+const MAX_RETRIES = 3;
+
 async function getStream(query, extractor) {
 	extractor.log(`use [cobalt] getStream: ${query.url}`);
-	try {
-		const response = await fetch("https://api.cobalt.tools/api/json", {
-			method: "POST",
-			headers: {
-				accept: "application/json",
-				"content-type": "application/json",
-			},
-			body: JSON.stringify({ url: query.url, isAudioOnly: true }),
-		});
-		const data = await response.json();
-		extractor.log(`use [cobalt] response: ${data}`);
-		return data.url;
-	} catch (error) {
-		extractor.log(`Error in getStream: ${error.message}`);
-		console.error(`Error in getStream: ${error.message}`);
-		return null;
+
+	while (retry < MAX_RETRIES) {
+		try {
+			extractor.log(`Attempt #${retry + 1}`);
+			const response = await fetch("https://api.cobalt.tools/api/json", {
+				method: "POST",
+				headers: {
+					accept: "application/json",
+					"content-type": "application/json",
+				},
+				body: JSON.stringify({ url: query.url, isAudioOnly: true }),
+			});
+
+			const data = await response.json();
+			extractor.log(`use [cobalt] response: ${data?.url}`);
+
+			if (data?.url) {
+				retry = 0;
+				return data.url;
+			}
+
+			retry++;
+		} catch (error) {
+			extractor.log(`Error in getStream: ${error.message}`);
+			console.error(`Error in getStream: ${error.message}`);
+			retry++;
+		}
 	}
+
+	return null; // Return null if retry limit is exceeded or all attempts fail
 }
 
 function isValidUrl(string) {
@@ -31,17 +47,7 @@ function isValidUrl(string) {
 		return false;
 	}
 }
-function isYouTubeQuery(query) {
-	if (["youtube", "youtu.be"].some((domain) => query.includes(domain))) {
-		return true;
-	}
 
-	if (/^[a-zA-Z0-9_-]{11}$/.test(query)) {
-		return true;
-	}
-
-	return query.length > 0;
-}
 class ZiExtractor extends BaseExtractor {
 	static identifier = "com.Ziji.discord-player.Zijiext";
 	static instance;
@@ -67,7 +73,6 @@ class ZiExtractor extends BaseExtractor {
 		"vine",
 		"vimeo",
 		"vk",
-		"youtube",
 	];
 
 	constructor(options) {
@@ -106,7 +111,7 @@ class ZiExtractor extends BaseExtractor {
 		try {
 			if (context.protocol === "https") query = `https:${query}`;
 
-			if (isYouTubeQuery(query)) {
+			if (["youtube", "youtu.be"].some((domain) => query.includes(domain))) {
 				query = query.replace(/(m(usic)?|gaming)\./, "");
 				return await this.handleYouTubeQuery(query, context);
 			}
@@ -143,6 +148,7 @@ class ZiExtractor extends BaseExtractor {
 		this.log(`Handling non-YouTube query: ${query}`);
 		const data = await unfurl(query, { timeout: 1500 });
 		const track = this.createTrack(data, query, context);
+		if (!track) return this.fallbackToYouTubeSearch(query, context);
 		return { playlist: null, tracks: [track] };
 	}
 
