@@ -1,0 +1,31 @@
+{
+	"name": "@zibot/zidis",
+	"version": "1.0.4",
+	"description": "Package support discord",
+	"main": "index.js",
+	"scripts": {
+		"test": "echo \"Error: no test specified\" && exit 1"
+	},
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/zijipia/Zibot_Package.git"
+	},
+	"keywords": [
+		"@zibot/zihooks",
+		"zihooks"
+	],
+	"author": "Ziji",
+	"license": "ISC",
+	"bugs": {
+		"url": "https://github.com/zijipia/Zibot_Package/issues"
+	},
+	"publishConfig": {
+		"access": "public"
+	},
+	"homepage": "https://github.com/zijipia/Zibot_Package#readme",
+	"dependencies": {
+		"events": "^3.3.0",
+		"opusscript": "^0.1.1",
+		"ws": "^8.18.0"
+	}
+}
