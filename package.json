@@ -1,0 +1,7 @@
+{
+  "dependencies": {
+    "discord-player": "^6.7.1",
+    "discord.js": "^14.16.3",
+    "unfurl.js": "^6.4.0"
+  }
+}

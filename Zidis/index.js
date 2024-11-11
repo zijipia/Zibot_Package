@@ -1,6 +1,8 @@
 const WebSocket = require("ws");
 const { EventEmitter } = require("events");
 const opus = require("opusscript");
+const prism = require("prism-media");
+
 const fs = require("fs");
 
 const voiceGatewayUrl = "wss://gateway.discord.gg/?v=10&encoding=json";
@@ -14,6 +16,8 @@ class DiscordVoiceClient extends EventEmitter {
 		this.userId = userId;
 		this.voiceWs = null;
 		this.gatewayWs = null;
+		this.encoder = new opus(48000, 2); // Initialize Opus encoder for 48kHz, stereo
+		this.decoder = new prism.opus.Decoder({ frameSize: 960, channels: 2, rate: 48000 });
 	}
 
 	connect() {
@@ -79,22 +83,73 @@ class DiscordVoiceClient extends EventEmitter {
 		this.voiceWs.on("close", () => {
 			console.log("Disconnected from Discord Voice Server");
 		});
+
+		this.voiceWs.on("error", (err) => {
+			console.error("Voice WebSocket Error:", err);
+		});
 	}
 
-	playAudio(filePath) {
-		const audioBuffer = fs.readFileSync(filePath);
-		const opusEncoded = this.encodeOpus(audioBuffer);
-		const packet = this.createVoicePacket(opusEncoded);
+	async playAudio(filePath) {
+		const pcmStream = this.decodeFileToPCM(filePath);
 
-		this.voiceWs.send(packet);
+		for await (const pcmChunk of pcmStream) {
+			if (pcmChunk.length === 3840) {
+				// Ensure correct frame size
+				const opusEncoded = this.encodeOpus(pcmChunk);
+				if (opusEncoded) {
+					const packet = this.createVoicePacket(opusEncoded);
+					this.voiceWs.send(packet);
+				}
+			} else {
+				console.warn("Skipping PCM chunk due to incorrect size:", pcmChunk.length);
+			}
+		}
 	}
 
-	encodeOpus(audioBuffer) {
-		const encoder = new opus.Encoder(48000, 2); // 48kHz, stereo
-		return encoder.encode(audioBuffer);
+	decodeFileToPCM(filePath) {
+		const inputStream = fs.createReadStream(filePath);
+
+		// FFmpeg with error handling
+		const ffmpeg = new prism.FFmpeg({
+			args: ["-analyzeduration", "0", "-loglevel", "0", "-f", "s16le", "-ar", "48000", "-ac", "2"],
+		});
+
+		// Handle FFmpeg errors
+		ffmpeg.on("error", (err) => {
+			console.error("FFmpeg Error:", err);
+		});
+
+		// Catch any close event to avoid EPIPE errors
+		ffmpeg.on("close", (code, signal) => {
+			console.log(`FFmpeg process closed with code ${code} and signal ${signal}`);
+		});
+
+		const pcmDecoder = inputStream.pipe(ffmpeg).pipe(this.decoder);
+
+		// Handle stream errors
+		pcmDecoder.on("error", (err) => {
+			console.error("PCM Decoder Error:", err);
+		});
+
+		return pcmDecoder;
+	}
+
+	encodeOpus(pcmData) {
+		const frameSize = 960 * 2 * 2; // 3840 bytes for 20ms frame size
+		if (pcmData.length !== frameSize) {
+			console.warn(`Frame size mismatch: got ${pcmData.length}, expected ${frameSize}`);
+			return null; // Return null to skip encoding
+		}
+		try {
+			return this.encoder.encode(pcmData);
+		} catch (error) {
+			console.error("Encoding error:", error);
+			return null;
+		}
 	}
 
 	createVoicePacket(encodedAudio) {
+		if (!encodedAudio) return null;
 		return JSON.stringify({
 			op: 5,
 			d: {
@@ -103,5 +158,4 @@ class DiscordVoiceClient extends EventEmitter {
 		});
 	}
 }
-
 module.exports = DiscordVoiceClient;
