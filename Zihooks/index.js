@@ -16,19 +16,24 @@ function createSingleton(name) {
 const useDB = createSingleton("Database");
 const useClient = createSingleton("Client");
 const useConfig = createSingleton("Config");
+const useUntil = createSingleton("Until");
+const useStatus = createSingleton("Status");
+
 const useCommands = createSingleton("Commands");
 const useFunctions = createSingleton("Functions");
 const useCooldowns = createSingleton("Cooldowns");
 const useGiveaways = createSingleton("Giveaways");
-const useUtils = createSingleton("Utils");
+const useResponder = createSingleton("Responder");
 
 module.exports = {
 	useDB,
-	useUtils,
 	useClient,
 	useConfig,
+	useUntil,
+	useStatus,
 	useCommands,
 	useFunctions,
 	useCooldowns,
 	useGiveaways,
+	useResponder,
 };
