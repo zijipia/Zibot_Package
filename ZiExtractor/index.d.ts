@@ -15,6 +15,14 @@ const { EventEmitter } = require("events");
 
 interface ZiExtractorInit {
 	createStream?: (info: Track) => Promise<Readable | string>;
+	highWaterMark: Number;
+	oauth: {
+		facebook_token?: String;
+		soundcloud_clientId?: String;
+		twitch_clientId?: String;
+		twitch_token?: String;
+		instagram_token?: String;
+	};
 }
 
 declare class ZiExtractor extends BaseExtractor<ZiExtractorInit> {
