@@ -1,0 +1,35 @@
+{
+	"name": "@zibot/scdl",
+	"version": "0.0.2",
+	"description": "Soucloud download",
+	"main": "index.js",
+	"types": "index.d.ts",
+	"scripts": {
+		"test": "echo \"Error: no test specified\" && exit 1"
+	},
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/zijipia/Zibot_Package.git"
+	},
+	"keywords": [
+		"@zibot/scdl",
+		"scdl"
+	],
+	"author": "Ziji",
+	"license": "ISC",
+	"bugs": {
+		"url": "https://github.com/zijipia/Zibot_Package/issues"
+	},
+	"publishConfig": {
+		"access": "public"
+	},
+	"homepage": "https://github.com/zijipia/Zibot_Package#readme",
+	"devDependencies": {
+		"discord.js": "^14.16.3"
+	},
+	"dependencies": {
+		"axios": "^1.7.7",
+		"events": "^3.3.0",
+		"m3u8stream": "^0.8.6"
+	}
+}
