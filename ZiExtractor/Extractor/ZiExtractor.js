@@ -1,7 +1,7 @@
 const { BaseExtractor, QueryType, Track, Playlist, Util } = require("discord-player");
 const { unfurl } = require("unfurl.js");
 const YouTubeSR = require("youtube-sr");
-const { SoundCloud } = require("scdl-core");
+const SoundCloud = require("@zibot/scdl");
 
 const MAX_RETRIES = 3;
 
@@ -63,7 +63,7 @@ async function getYoutubeStream(url, extractor) {
 
 async function getSoundcloudStream(url, extractor) {
 	try {
-		return SoundCloud.download(url, {
+		return extractor.ZSoundCloud.downloadTrack(url, {
 			highWaterMark: extractor?._options.highWaterMark || 1 << 25,
 		});
 	} catch (error) {
@@ -83,15 +83,15 @@ function isValidUrl(string) {
 
 class ZiExtractor extends BaseExtractor {
 	static identifier = "com.Ziji.discord-player.Zijiext";
-
 	constructor(options) {
 		super(options);
 		this._stream = options.createStream || getStream;
 		this._options = options;
+		this.ZSoundCloud = new SoundCloud({ init: true });
 	}
 	protocols = ["https", "soundcloud", "youtube"];
 	async activate() {
-		await SoundCloud.connect();
+		await this.ZSoundCloud.init();
 	}
 
 	async deactivate() {
@@ -135,14 +135,14 @@ class ZiExtractor extends BaseExtractor {
 				const tracks = uniqueTracks.map((video) => this.createYTTrack(video, { requestedBy: track.requestedBy }));
 				return { playlist: null, tracks };
 			}
-			const results = await SoundCloud.search({ query: track.author, limit: 30, filter: "tracks" });
+			const results = await this.ZSoundCloud.searchTracks({ query: track.author, limit: 30, filter: "tracks" });
 
-			if (!results || !results?.collection?.length) {
-				return [];
+			if (!results || !results?.length) {
+				return this.emptyResponse();
 			}
-			const tracks = results.collection.filter(
-				(track) => !!track?.permalink_url && !history.tracks.some((tracks) => tracks.url === track.permalink_url),
-			);
+
+			const tracks = results.filter((track) => !history.tracks.some((t) => t.url === track.permalink_url));
+
 			const res = tracks.slice(0, 20).map((track) => this.createSCTrack(track, { requestedBy: track.requestedBy }));
 			return { playlist: null, tracks: res };
 		} catch (error) {
@@ -264,7 +264,7 @@ class ZiExtractor extends BaseExtractor {
 	async handlePlaylist(query, context) {
 		this.log(`Fetching playlist for query: "${query}"`);
 		try {
-			const playlistData = await YouTubeSR.YouTube.getPlaylist(query, {
+			const playlistData = await YouTubeSR.YouTube.getPlaylistDetails(query, {
 				fetchAll: true,
 				limit: context.requestOptions?.limit,
 				requestOptions: context.requestOptions,
@@ -372,13 +372,12 @@ class ZiExtractor extends BaseExtractor {
 
 	async searchSoundcloud(query, context = {}) {
 		try {
-			const results = await SoundCloud.search({ query, limit: 30, filter: "tracks" });
+			const results = await this.ZSoundCloud.searchTracks({ query, limit: 30, filter: "tracks" });
 
-			if (!results || !results?.collection?.length) {
+			if (!results || !results?.length) {
 				return [];
 			}
-			const tracks = results.collection.filter((track) => !!track?.permalink_url);
-			const res = tracks.slice(0, 20).map((track) => this.createSCTrack(track, context));
+			const res = results.slice(0, 20).map((track) => this.createSCTrack(track, context));
 			return { playlist: null, tracks: res };
 		} catch (error) {
 			this.log(`Error in searchSoundcloud: ${error.message}`);
@@ -389,7 +388,7 @@ class ZiExtractor extends BaseExtractor {
 	async handleSCVideo(query, context) {
 		this.log(`Handling Track for query: "${query}"`);
 		try {
-			const tracks = await SoundCloud.tracks.getTrack(query);
+			const tracks = await this.ZSoundCloud.getTrackDetails(query);
 
 			if (!tracks) {
 				this.log(`No video found for ID: "${query}"`);
@@ -407,7 +406,7 @@ class ZiExtractor extends BaseExtractor {
 	async handleSCPlaylist(query, context) {
 		this.log(`Fetching playlist for query: "${query}"`);
 		try {
-			const playlistData = await SoundCloud.playlists.getPlaylist(permalink);
+			const playlistData = await this.ZSoundCloud.getPlaylistDetails(permalink);
 
 			if (!playlistData) {
 				this.log(`No playlist data found for query: "${query}"`);
@@ -447,7 +446,7 @@ class ZiExtractor extends BaseExtractor {
 			author: track?.user?.username,
 			url: track?.permalink_url,
 			requestedBy: context?.requestedBy,
-			thumbnail: track.artwork_url,
+			thumbnail: track.artwork_url || "Unknown",
 			duration: Util.buildTimeCode(Util.parseMS(track.duration)),
 			source: "soundcloud",
 			raw: track,

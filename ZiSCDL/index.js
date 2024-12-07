@@ -31,15 +31,22 @@ class SoundCloud {
 	}
 
 	// Search SoundCloud
-	async searchTracks({ query, limit = 20, offset = 0, type = "all" }) {
+	async searchTracks({ query, limit = 30, offset = 0, type = "all" }) {
 		const path = type === "all" ? "" : `/${type}`;
 		const url = `${this.apiBaseUrl}/search${path}?q=${encodeURIComponent(
 			query,
 		)}&limit=${limit}&offset=${offset}&access=playable&client_id=${this.clientId}`;
-		console.log(url);
 		try {
 			const { data } = await axios.get(url);
-			return data;
+			if (!data || !data?.collection?.length) {
+				return [];
+			}
+
+			return data.collection.filter((track) => {
+				if (!track.permalink_url) return false;
+				if (!track.title) return false;
+				if (!track.duration) return false;
+			});
 		} catch (error) {
 			console.error("Search error:", error.message || error);
 			throw new Error("Search failed");
@@ -77,13 +84,18 @@ class SoundCloud {
 
 	// Download track stream
 	async downloadTrack(trackUrl, options = {}) {
-		const track = await this.getTrackDetails(trackUrl);
-		const transcoding = track.media.transcodings.find((t) => t.format.protocol === "hls");
+		try {
+			const track = await this.getTrackDetails(trackUrl);
+			const transcoding = track?.media?.transcodings?.find((t) => t.format.protocol === "hls");
 
-		if (!transcoding) throw new Error("No valid HLS stream found");
+			if (!transcoding) throw new Error("No valid HLS stream found");
 
-		const m3u8Url = await this.getStreamUrl(transcoding.url);
-		return m3u8stream(m3u8Url, options);
+			const m3u8Url = await this.getStreamUrl(transcoding.url);
+			return m3u8stream(m3u8Url, options);
+		} catch (e) {
+			console.error("Failed to download track");
+			return null;
+		}
 	}
 
 	// Fetch single item (track/playlist/user)
