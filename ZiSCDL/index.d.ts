@@ -38,11 +38,6 @@ interface User {
 	track_count: number;
 }
 
-interface SearchResponse {
-	collection: (Track | Playlist | User)[];
-	next_href?: string;
-}
-
 declare class SoundCloud {
 	clientId: string | null;
 	apiBaseUrl: string;
@@ -57,7 +52,7 @@ declare class SoundCloud {
 	/**
 	 * Search for tracks, playlists, or users on SoundCloud.
 	 */
-	searchTracks(options: SearchOptions): Promise<SearchResponse>;
+	searchTracks(options: SearchOptions): Promise<(Track | Playlist | User)[]>;
 
 	/**
 	 * Retrieve detailed information about a single track.

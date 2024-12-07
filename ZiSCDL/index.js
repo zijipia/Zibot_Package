@@ -38,14 +38,14 @@ class SoundCloud {
 		)}&limit=${limit}&offset=${offset}&access=playable&client_id=${this.clientId}`;
 		try {
 			const { data } = await axios.get(url);
+
 			if (!data || !data?.collection?.length) {
 				return [];
 			}
 
 			return data.collection.filter((track) => {
-				if (!track.permalink_url) return false;
-				if (!track.title) return false;
-				if (!track.duration) return false;
+				if (!track.permalink_url || !track.title || !track.duration) return false;
+				return true;
 			});
 		} catch (error) {
 			console.error("Search error:", error.message || error);

@@ -446,7 +446,7 @@ class ZiExtractor extends BaseExtractor {
 			author: track?.user?.username,
 			url: track?.permalink_url,
 			requestedBy: context?.requestedBy,
-			thumbnail: track.artwork_url || "Unknown",
+			thumbnail: track.artwork_url || track.user.avatar_url,
 			duration: Util.buildTimeCode(Util.parseMS(track.duration)),
 			source: "soundcloud",
 			raw: track,
