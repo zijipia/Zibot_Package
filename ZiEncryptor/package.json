@@ -1,0 +1,27 @@
+{
+  "name": "@zibot/ziencryptor",
+  "version": "0.0.1",
+  "description": "encrypt and decrypt data",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/zijipia/Zibot_Package.git"
+  },
+  "keywords": [
+    "encrypt",
+    "decrypt",
+    "ziencryptor"
+  ],
+  "author": "Ziji",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/zijipia/Zibot_Package/issues"
+  },
+  "homepage": "https://github.com/zijipia/Zibot_Package#readme",
+  "dependencies": {
+    "crypto-js": "^4.2.0"
+  }
+}
