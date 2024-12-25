@@ -1,6 +1,6 @@
 {
 	"name": "@zibot/ziextractor",
-	"version": "2.2.0",
+	"version": "2.2.2",
 	"description": "Extractor for discord-player v6",
 	"main": "index.js",
 	"scripts": {
@@ -29,7 +29,7 @@
 		"events": "^3.3.0"
 	},
 	"dependencies": {
-		"@zibot/scdl": "^0.0.3",
+		"@zibot/scdl": "^0.0.4",
 		"axios": "^1.7.7",
 		"prism-media": "^1.3.5",
 		"unfurl.js": "^6.4.0",

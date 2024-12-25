@@ -63,6 +63,10 @@ async function getYoutubeStream(url, extractor) {
 
 async function getSoundcloudStream(url, extractor) {
 	try {
+		if (url.includes("sets")) {
+			const playlistData = await extractor.ZSoundCloud.getPlaylistDetails(url);
+			url = playlistData.tracks?.at(0).permalink_url;
+		}
 		return extractor.ZSoundCloud.downloadTrack(url, {
 			highWaterMark: extractor?._options.highWaterMark || 1 << 25,
 		});
@@ -264,7 +268,7 @@ class ZiExtractor extends BaseExtractor {
 	async handlePlaylist(query, context) {
 		this.log(`Fetching playlist for query: "${query}"`);
 		try {
-			const playlistData = await YouTubeSR.YouTube.getPlaylistDetails(query, {
+			const playlistData = await YouTubeSR.YouTube.getPlaylist(query, {
 				fetchAll: true,
 				limit: context.requestOptions?.limit,
 				requestOptions: context.requestOptions,
@@ -406,7 +410,7 @@ class ZiExtractor extends BaseExtractor {
 	async handleSCPlaylist(query, context) {
 		this.log(`Fetching playlist for query: "${query}"`);
 		try {
-			const playlistData = await this.ZSoundCloud.getPlaylistDetails(permalink);
+			const playlistData = await this.ZSoundCloud.getPlaylistDetails(query);
 
 			if (!playlistData) {
 				this.log(`No playlist data found for query: "${query}"`);
@@ -428,7 +432,7 @@ class ZiExtractor extends BaseExtractor {
 				rawPlaylist: playlistData,
 			});
 
-			this.log(`Playlist "${playlist.title}" created with ${playlistData.videos.length} tracks.`);
+			this.log(`Playlist "${playlist.title}" created with ${playlistData.tracks.length} tracks.`);
 			playlist.tracks = playlistData.tracks.map((track) => this.createSCTrack(track, context, playlist));
 
 			return { playlist, tracks: playlist.tracks };

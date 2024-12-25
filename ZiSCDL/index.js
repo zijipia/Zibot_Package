@@ -111,12 +111,29 @@ class SoundCloud {
 
 	// Fetch multiple tracks by their IDs
 	async fetchTracksByIds(trackIds) {
-		const ids = trackIds.join(",");
-		const url = `${this.apiBaseUrl}/tracks?ids=${ids}&client_id=${this.clientId}`;
+		const chunkSize = 50; // Adjust chunk size as needed based on API limits
+		const chunks = [];
+		for (let i = 0; i < trackIds.length; i += chunkSize) {
+			chunks.push(trackIds.slice(i, i + chunkSize));
+		}
+
 		try {
-			const { data } = await axios.get(url);
-			return data;
+			const results = await Promise.all(
+				chunks.map(async (chunk) => {
+					const ids = chunk.join(",");
+					const url = `${this.apiBaseUrl}/tracks?ids=${ids}&client_id=${this.clientId}`;
+					const { data } = await axios.get(url);
+					return data;
+				}),
+			);
+
+			// Combine results from all chunks
+			return results.flat();
 		} catch (error) {
+			console.error("Failed to fetch tracks by IDs:", {
+				clientId: this.clientId,
+				error: error.response?.data || error.message,
+			});
 			throw new Error("Failed to fetch tracks by IDs");
 		}
 	}
