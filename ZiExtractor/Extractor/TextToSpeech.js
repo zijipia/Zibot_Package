@@ -3,7 +3,8 @@ const googleTTS = require("google-tts-api");
 
 async function getStream(query, extractor) {
 	try {
-		const streamUrl = googleTTS.getAudioUrl(query.description, {
+		// console.error(query)
+		const streamUrl = googleTTS.getAudioUrl(query.raw.context, {
 			lang: query.raw?.lang || "vi",
 			slow: query.raw?.slow || false,
 			host: query.raw?.host || "https://translate.google.com",
