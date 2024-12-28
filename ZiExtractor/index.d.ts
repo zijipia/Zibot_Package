@@ -79,4 +79,20 @@ declare class ZiVoiceExtractor extends EventEmitter {
 
 declare function useZiVoiceExtractor(speechOptions?: SpeechOptions): ZiVoiceExtractor;
 
-export { ZiExtractor, ZiVoiceExtractor, useZiVoiceExtractor };
+declare class TextToSpeech extends BaseExtractor<ZiExtractorInit> {
+	static identifier: string;
+	static instance: TextToSpeech | null;
+	protocols: string[];
+	private _stream: (info: Track) => Promise<Readable | string>;
+
+	constructor(options: ZiExtractorInit);
+
+	activate(): Promise<void>;
+	deactivate(): Promise<void>;
+	validate(query: string, type?: SearchQueryType | null | undefined): boolean;
+	stream(info: Track): Promise<ExtractorStreamable>;
+	emptyResponse(): ExtractorInfo;
+	private log(message: string): void;
+}
+
+export { ZiExtractor, ZiVoiceExtractor, useZiVoiceExtractor, TextToSpeech };
