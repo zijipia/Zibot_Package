@@ -2,8 +2,10 @@
 
 ## About
 
-ZiExtractor is a personal music extractor built for extracting audio from various sources. It's currently under development and might not be entirely stable. Please use it with caution.  
-ZiExtractor draws inspiration from the [@discord-player/extractor](https://www.npmjs.com/package/@discord-player/extractor), providing a foundation for audio extraction.
+ZiExtractor is a personal music extractor built for extracting audio from various sources. It's currently under development and
+might not be entirely stable. Please use it with caution.  
+ZiExtractor draws inspiration from the [@discord-player/extractor](https://www.npmjs.com/package/@discord-player/extractor),
+providing a foundation for audio extraction.
 
 ## Getting Started
 
@@ -19,7 +21,7 @@ npm i @zibot/ziextractor
 2. Import ZiExtractor from the ziextractor package:
 
 ```js
-const { ZiExtractor } = require('@zibot/ziextractor');
+const { ZiExtractor } = require("@zibot/ziextractor");
 ```
 
 3. Register ZiExtractor with your player:
@@ -31,7 +33,7 @@ player.extractors.register(ZiExtractor, {});
 4. Disable youtube
 
 ```js
-player.extractors.loadDefault(ext => ext !== 'YouTubeExtractor');
+player.extractors.loadDefault((ext) => ext !== "YouTubeExtractor");
 ```
 
 ## Important Notes
@@ -47,7 +49,8 @@ player.extractors.loadDefault(ext => ext !== 'YouTubeExtractor');
 
 ## About
 
-ZiVoiceExtractor is a powerful voice extraction and speech recognition tool designed for use with Discord bots. It allows you to capture voice input from users in voice channels and convert it to text using Google's Speech-to-Text API.
+ZiVoiceExtractor is a powerful voice extraction and speech recognition tool designed for use with Discord bots. It allows you to
+capture voice input from users in voice channels and convert it to text using Google's Speech-to-Text API.
 
 ## Getting Started
 
@@ -56,18 +59,18 @@ ZiVoiceExtractor is a powerful voice extraction and speech recognition tool desi
 First, import the necessary components:
 
 ```js
-const { ZiVoiceExtractor, useZiVoiceExtractor } = require('@zibot/ziextractor');
+const { ZiVoiceExtractor, useZiVoiceExtractor } = require("@zibot/ziextractor");
 ```
 
 Then, initialize the extractor with your Discord player instance and speech options:
 
 ```js
 const speechOptions = {
-  ignoreBots: true,
-  minimalVoiceMessageDuration: 1,
-  lang: 'en-US', // Set your preferred language
-  key: 'YOUR_GOOGLE_SPEECH_API_KEY', // Optional: Provide your own API key
-  profanityFilter: false, // Optional: Enable/disable profanity filter
+	ignoreBots: true,
+	minimalVoiceMessageDuration: 1,
+	lang: "en-US", // Set your preferred language
+	key: "YOUR_GOOGLE_SPEECH_API_KEY", // Optional: Provide your own API key
+	profanityFilter: false, // Optional: Enable/disable profanity filter
 };
 const voiceExtractor = useZiVoiceExtractor(speechOptions);
 ```
@@ -79,37 +82,36 @@ To start processing voice input, you need to call the `handleSpeakingEvent` meth
 which discord-player:
 
 ```js
-player.events.on('connection', async queue => {
-  const { player, connection } = queue;
-  const ziVoice = useZiVoiceExtractor();
+player.events.on("connection", async (queue) => {
+	const { player, connection } = queue;
+	const ziVoice = useZiVoiceExtractor();
 
-  ziVoice.handleSpeakingEvent(player.client, connection);
+	ziVoice.handleSpeakingEvent(player.client, connection);
 });
 ```
 
-which discord:
-joinVoiceChannel command:
+which discord: joinVoiceChannel command:
 
 ```js
 const voiceChannel = interaction.member?.voice.channel;
 if (voiceChannel) {
-  joinVoiceChannel({
-    channelId: voiceChannel.id,
-    guildId: voiceChannel.guild.id,
-    adapterCreator: voiceChannel.guild.voiceAdapterCreator,
-    selfDeaf: false,
-  });
+	joinVoiceChannel({
+		channelId: voiceChannel.id,
+		guildId: voiceChannel.guild.id,
+		adapterCreator: voiceChannel.guild.voiceAdapterCreator,
+		selfDeaf: false,
+	});
 }
 ```
 
 voiceStateUpdate:
 
 ```js
-client.on('voiceStateUpdate', (oldState, newState) => {
-  if (newState.channel && newState.channel.type === 'voice') {
-    const ziVoice = useZiVoiceExtractor();
-    ziVoice.handleSpeakingEvent(client, newState);
-  }
+client.on("voiceStateUpdate", (oldState, newState) => {
+	if (newState.channel && newState.channel.type === "voice") {
+		const ziVoice = useZiVoiceExtractor();
+		ziVoice.handleSpeakingEvent(client, newState);
+	}
 });
 ```
 
@@ -118,9 +120,9 @@ client.on('voiceStateUpdate', (oldState, newState) => {
 To handle voice output, you can listen for the 'voiceCreate' event:
 
 ```js
-voiceExtractor.on('voiceCreate', async ({ content, user, channel, client }) => {
-  console.log(`User ${user.username} said: ${content}`);
-  // Handle the recognized speech here
+voiceExtractor.on("voiceCreate", async ({ content, user, channel, client }) => {
+	console.log(`User ${user.username} said: ${content}`);
+	// Handle the recognized speech here
 });
 ```
 
@@ -129,8 +131,8 @@ voiceExtractor.on('voiceCreate', async ({ content, user, channel, client }) => {
 ZiVoiceExtractor provides debug information. You can listen to the 'debug' event for detailed logs:
 
 ```js
-voiceExtractor.on('debug', message => {
-  console.log(`[ZiVoiceExtractor Debug] ${message}`);
+voiceExtractor.on("debug", (message) => {
+	console.log(`[ZiVoiceExtractor Debug] ${message}`);
 });
 ```
 
@@ -151,6 +153,15 @@ When initializing ZiVoiceExtractor, you can provide the following options:
 - The Google Speech API key is optional but recommended for production use to avoid rate limiting.
 - This extractor works best with clear audio input and may have difficulty with background noise or low-quality microphones.
 
+---
+
+---
+
+# TextToSpeech
+
+## Example: [Ziji-bot-discord](https://github.com/zijipia/Ziji-bot-discord/blob/main/functions/player/TextToSpeech.js)
+
 # Support
 
-For issues, feature requests, or contributions, please visit the [GitHub repository](https://github.com/zijipia/ZiExtractor). [Discord](https://discord.gg/HPBWtDswfE)
+For issues, feature requests, or contributions, please visit the [GitHub repository](https://github.com/zijipia/ZiExtractor).
+[Discord](https://discord.gg/HPBWtDswfE)
