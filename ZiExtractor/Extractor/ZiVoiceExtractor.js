@@ -52,7 +52,7 @@ class ZiVoiceExtractor extends EventEmitter {
 				this.debug(`User ${userId} is a bot`);
 				return;
 			}
-			if (this.speechOptions.focusUser && userId !== this.speechOptions.focusUser) {
+			if (options?.focusUser && userId !== options.focusUser) {
 				this.debug(`User ${userId} is not in focus`);
 				return;
 			}

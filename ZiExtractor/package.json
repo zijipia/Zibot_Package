@@ -1,6 +1,6 @@
 {
 	"name": "@zibot/ziextractor",
-	"version": "2.3.1",
+	"version": "2.3.2",
 	"description": "Extractor for discord-player v6",
 	"main": "index.js",
 	"scripts": {
