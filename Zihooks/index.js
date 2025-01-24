@@ -18,6 +18,7 @@ const useClient = createSingleton("Client");
 const useConfig = createSingleton("Config");
 const useUntil = createSingleton("Until");
 const useStatus = createSingleton("Status");
+const useLogger = createSingleton("Logger");
 const useWelcome = createSingleton("Welcome");
 const useCommands = createSingleton("Commands");
 const useFunctions = createSingleton("Functions");
@@ -31,6 +32,7 @@ module.exports = {
 	useConfig,
 	useUntil,
 	useStatus,
+	useLogger,
 	useWelcome,
 	useCommands,
 	useFunctions,
