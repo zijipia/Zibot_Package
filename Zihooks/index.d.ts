@@ -1,4 +1,4 @@
-import { Client } from "discord.js";
+import { Client, Message, CommandInteraction } from "discord.js";
 import { Logger } from "winston";
 class customMap extends Map {
 	constructor() {
@@ -6,6 +6,7 @@ class customMap extends Map {
 	}
 }
 
+export function useAI(AI?: any): any;
 export function useDB(DB?: any): any;
 export function useUtils(Utils?: any): any;
 export function useClient(Client?: Client): Client;
@@ -19,3 +20,4 @@ export function useCommands(Commands?: any): customMap;
 export function useFunctions(Functions?: any): customMap;
 export function useCooldowns(Cooldowns?: any): customMap;
 export function useResponder(Responder?: any): customMap;
+export function modinteraction(message?: Message): CommandInteraction;

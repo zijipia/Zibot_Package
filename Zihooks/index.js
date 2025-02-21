@@ -13,6 +13,8 @@ function createSingleton(name) {
 		return instance;
 	};
 }
+
+const useAI = createSingleton("AI");
 const useDB = createSingleton("Database");
 const useClient = createSingleton("Client");
 const useConfig = createSingleton("Config");
@@ -26,7 +28,21 @@ const useCooldowns = createSingleton("Cooldowns");
 const useGiveaways = createSingleton("Giveaways");
 const useResponder = createSingleton("Responder");
 
+const modinteraction = async (message) => {
+	message.user = message.author;
+	message.deferReply = async () => {
+		await message.channel.sendTyping().catch(() => {
+			return false;
+		});
+		return true;
+	};
+	message.editReply = async (content) => {
+		return message.reply(content);
+	};
+};
+
 module.exports = {
+	useAI,
 	useDB,
 	useClient,
 	useConfig,
@@ -39,4 +55,5 @@ module.exports = {
 	useCooldowns,
 	useGiveaways,
 	useResponder,
+	modinteraction,
 };
