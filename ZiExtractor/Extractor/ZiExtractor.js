@@ -2,6 +2,7 @@ const { BaseExtractor, QueryType, Track, Playlist, Util } = require("discord-pla
 const { unfurl } = require("unfurl.js");
 const YouTubeSR = require("youtube-sr");
 const SoundCloud = require("@zibot/scdl");
+const youtubedl = require("youtube-dl-exec");
 
 const MAX_RETRIES = 3;
 
@@ -57,8 +58,20 @@ function detectPlatform(url) {
 }
 
 async function getYoutubeStream(url, extractor) {
-	// TODO: Implement YouTube stream handling logic
-	return "Stream link for YouTube not implemented";
+	const info = await youtubedl(url, {
+		dumpSingleJson: true,
+		noCheckCertificates: true,
+		noWarnings: true,
+		preferFreeFormats: true,
+		addHeader: ["referer:youtube.com", "user-agent:googlebot"],
+	});
+
+	const videourl = info?.url;
+	if (!videourl) {
+		return `Failed to parse stream URL for ${query}`;
+	}
+
+	return videourl;
 }
 
 async function getSoundcloudStream(url, extractor) {
