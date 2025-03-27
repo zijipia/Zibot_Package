@@ -1,0 +1,27 @@
+{
+	"name": "@zibot/zitts",
+	"version": "0.0.1",
+	"description": "AA simple package to convert text to speech using Google Translate and return a list of audio file URLs.",
+	"main": "index.js",
+	"scripts": {
+		"test": "echo \"Error: no test specified\" && exit 1"
+	},
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/zijipia/Zibot_Package.git"
+	},
+	"keywords": [
+		"@zibot/zihooks",
+		"zihooks"
+	],
+	"author": "Ziji",
+	"license": "ISC",
+	"bugs": {
+		"url": "https://github.com/zijipia/Zibot_Package/issues"
+	},
+	"publishConfig": {
+		"access": "public"
+	},
+	"homepage": "https://github.com/zijipia/Zibot_Package#readme",
+	"dependencies": {}
+}

@@ -1,5 +1,5 @@
 const { BaseExtractor } = require("discord-player");
-const googleTTS = require("google-tts-api");
+const { getTTSUrls } = require("@zibot/zitts");
 const fetch = require("node-fetch");
 const { Readable } = require("stream");
 
@@ -26,10 +26,9 @@ function mergeBuffers(buffers) {
 
 async function getStream(query, extractor) {
 	try {
-		const streamUrls = googleTTS.getAllAudioUrls(query.raw.context, {
+		const streamUrls = getTTSUrls(query.raw.context, {
 			lang: query.raw?.lang || "vi",
 			slow: query.raw?.slow || false,
-			host: query.raw?.host || "https://translate.google.com",
 		});
 
 		if (!streamUrls || streamUrls.length === 0) {
