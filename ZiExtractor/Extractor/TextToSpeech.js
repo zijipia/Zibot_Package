@@ -36,7 +36,7 @@ async function getStream(query, extractor) {
 		}
 
 		extractor.log(`Fetching ${streamUrls.length} audio parts...`);
-		const audioBuffers = await Promise.all(streamUrls.map(({ url }) => fetchAudioBuffer(url)));
+		const audioBuffers = await Promise.all(streamUrls.map((url) => fetchAudioBuffer(url)));
 
 		extractor.log("Merging audio buffers...");
 		const mergedBuffer = mergeBuffers(audioBuffers);
