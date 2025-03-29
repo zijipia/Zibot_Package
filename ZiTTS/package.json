@@ -1,6 +1,6 @@
 {
 	"name": "@zibot/zitts",
-	"version": "0.0.1",
+	"version": "0.0.3",
 	"description": "AA simple package to convert text to speech using Google Translate and return a list of audio file URLs.",
 	"main": "index.js",
 	"scripts": {

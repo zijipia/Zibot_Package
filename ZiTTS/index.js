@@ -8,14 +8,23 @@ function splitText(text, maxLength) {
 	const parts = [];
 	let currentPart = "";
 
-	for (const sentence of sentences) {
-		if ((currentPart + sentence).length > maxLength) {
+	for (let sentence of sentences) {
+		while (sentence.length > maxLength) {
+			let splitIndex = sentence.lastIndexOf(" ", maxLength);
+			if (splitIndex === -1) splitIndex = maxLength;
+
+			parts.push(sentence.slice(0, splitIndex).trim());
+			sentence = sentence.slice(splitIndex).trim();
+		}
+
+		if ((currentPart + " " + sentence).trim().length > maxLength) {
 			parts.push(currentPart.trim());
 			currentPart = sentence;
 		} else {
-			currentPart += sentence;
+			currentPart += " " + sentence;
 		}
 	}
+
 	if (currentPart) parts.push(currentPart.trim());
 
 	return parts;
