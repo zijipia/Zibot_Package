@@ -1,0 +1,30 @@
+{
+	"name": "@zibot/db",
+	"version": "0.0.2",
+	"description": "ZiDB is a simple database for discord bot",
+	"main": "index.js",
+	"scripts": {
+		"test": "echo \"Error: no test specified\" && exit 1"
+	},
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/zijipia/Zibot_Package.git"
+	},
+	"type": "commonjs",
+	"keywords": [
+		"@zibot/zihooks",
+		"zihooks"
+	],
+	"author": "Ziji",
+	"license": "ISC",
+	"bugs": {
+		"url": "https://github.com/zijipia/Zibot_Package/issues"
+	},
+	"publishConfig": {
+		"access": "public"
+	},
+	"homepage": "https://github.com/zijipia/Zibot_Package#readme",
+	"dependencies": {
+		"path": "^0.12.7"
+	}
+}

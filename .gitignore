@@ -38,4 +38,3 @@ config.js
 package-lock.json
 discord-giveaways
 giveaways.json
-*.json
