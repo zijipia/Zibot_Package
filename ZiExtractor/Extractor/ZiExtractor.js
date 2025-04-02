@@ -68,7 +68,7 @@ async function getYoutubeStream(url, extractor) {
 
 	const videourl = info?.url;
 	if (!videourl) {
-		return `Failed to parse stream URL for ${query}`;
+		return 0;
 	}
 
 	return videourl;

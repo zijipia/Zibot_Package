@@ -1,6 +1,6 @@
 {
 	"name": "@zibot/giveaway",
-	"version": "1.0.0",
+	"version": "0.0.1",
 	"description": "Give away for discord.js",
 	"main": "index.js",
 	"scripts": {

@@ -1,68 +1,187 @@
-# Zihooks
+# @zibot/giveaway
 
-Zihooks là một module JavaScript cho phép bạn tạo và quản lý các singleton cho các chức năng, lệnh, thời gian chờ và client trong
-ứng dụng của bạn.
+A simple and efficient giveaway management system for Discord bots using `discord.js`. This package allows you to create, manage,
+pause, resume, and end giveaways with ease.
 
-## Cài đặt
+## Installation
 
-Để cài đặt module này, bạn có thể sử dụng npm hoặc yarn:
-
-```bash
-npm install @zibot/zihooks
+```sh
+npm install @zibot/giveaway
 ```
 
-hoặc
+## Features
 
-```bash
-yarn add @zibot/zihooks
-```
+- 🎉 Create giveaways with customizable duration and prizes
 
-## Sử dụng
+- ✋ Pause and resume giveaways
 
-Dưới đây là cách bạn có thể sử dụng các hàm được cung cấp bởi module này:
+- 🏆 Automatically pick winners when the giveaway ends
 
-### useFunctions
+- 📋 Fetch active giveaways
+
+- 🎭 Role-based participation
+
+- 🟦 Button-based interaction
+
+## Usage
+
+### Importing the Module
 
 ```javascript
-const { useFunctions } = require("@zibot/zihooks");
-const functionsInstance = useFunctions(myFunctions);
-// Lần gọi đầu tiên yêu cầu một đối tượng Functions
+const { Client, GatewayIntentBits } = require("discord.js");
+const { Giveaways } = require("@zibot/giveaway");
+
+const client = new Client({
+	intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMessages, GatewayIntentBits.MessageContent],
+});
+
+const giveaways = new Giveaways(client, {
+	store: "./giveaways.json",
+	updateInterval: 60000, // 1 minute
+});
+
+client.once("ready", () => {
+	console.log(`Logged in as ${client.user.tag}`);
+	giveaways.init();
+});
+
+client.login("YOUR_BOT_TOKEN");
 ```
 
-### useCommands
+### Creating a Giveaway
 
 ```javascript
-const { useCommands } = require("@zibot/zihooks");
-const commandsInstance = useCommands(myCommands);
-// Lần gọi đầu tiên yêu cầu một đối tượng Commands
+giveaways.createGiveaway(
+	"channel-id", // The channel where the giveaway will be posted
+	"Free Nitro", // Prize name
+	60000, // Duration in milliseconds (1 minute)
+	1, // Number of winners
+	{ content: "🎉 Giveaway Started! 🎉" }, // Optional custom message
+);
+```
+### Editing a Giveaway
+```javascript
+const messageId = "123456789012345678"; // ID of message giveaway
+
+giveaways.editGiveaway(messageId, {
+  prize: "New Awesome Prize", // Prize name
+  duration: 300000, // Duration in milliseconds  (5 minute)
+  winnerCount: 2 // Number of winners
+});
+
+console.log("Giveaway updated!");
+
 ```
 
-### useCooldowns
+### Joining a Giveaway
 
 ```javascript
-const { useCooldowns } = require("@zibot/zihooks");
-const cooldownsInstance = useCooldowns(myCooldowns);
-// Lần gọi đầu tiên yêu cầu một đối tượng Cooldowns
+giveaways.joinGiveaway("message-id", "user-id");
 ```
 
-### useClient
+### Ending a Giveaway
 
 ```javascript
-const { useClient } = require("@zibot/zihooks");
-const clientInstance = useClient(myClient);
-// Lần gọi đầu tiên yêu cầu một đối tượng Client
+giveaways.endGiveaway("message-id");
 ```
 
-## Lưu ý
+### Pausing a Giveaway
 
-- Mỗi hàm chỉ cần được khởi tạo một lần với đối tượng tương ứng. Nếu bạn cố gắng gọi hàm mà không cung cấp đối tượng trong lần đầu
-  tiên, một lỗi sẽ được ném ra.
-- Sau khi khởi tạo, các lần gọi tiếp theo sẽ trả về instance đã được khởi tạo trước đó.
+```javascript
+giveaways.pauseGiveaway("message-id");
+```
 
-## Đóng góp
+### Resuming a Giveaway
 
-Nếu bạn muốn đóng góp cho dự án này, vui lòng tạo một pull request hoặc mở một issue trên GitHub.
+```javascript
+giveaways.unpauseGiveaway("message-id");
+```
 
-## Giấy phép
+### Fetching Active Giveaways
 
-Dự án này được cấp phép theo giấy phép MIT. Xem file [LICENSE](LICENSE) để biết thêm chi tiết.
+```javascript
+const activeGiveaways = giveaways.fetchGiveaways();
+console.log(activeGiveaways);
+```
+
+---
+
+## Use Button Interaction
+
+### Creating a Giveaway
+
+```javascript
+const { EmbedBuilder, ButtonBuilder, ActionRowBuilder, ButtonStyle } = require("discord.js");
+
+async function startGiveaway(channel) {
+  const embed = new EmbedBuilder()
+    .setTitle("🎉 Giveaway!")
+    .setDescription("Click the button below to enter!")
+    .setColor("Gold");
+
+  const button = new ButtonBuilder()
+    .setCustomId("join_giveaway")
+    .setLabel("Join Giveaway")
+    .setStyle(ButtonStyle.Primary);
+
+  const row = new ActionRowBuilder().addComponents(button);
+
+  const message = await channel.send({ embeds: [embed], components: [row] });
+
+  giveaways.createGiveaway(channel.id, "Awesome Prize", 60000, 1, message);
+}
+
+```
+
+### Handling Button Interaction
+
+```javascript
+client.on("interactionCreate", async (interaction) => {
+  if (!interaction.isButton()) return;
+
+  if (interaction.customId === "join_giveaway") {
+    const joined = giveaways.joinGiveaway(interaction.message.id, interaction.user.id);
+    
+    if (joined) {
+      await interaction.reply({ content: "You have joined the giveaway!", ephemeral: true });
+    } else {
+      await interaction.reply({ content: "You are already in the giveaway!", ephemeral: true });
+    }
+  }
+});
+
+```
+
+## Events
+
+You can listen to various events for better control over the giveaway process:
+
+```javascript
+giveaways.on("giveawayCreated", (client, giveaway) => {
+	console.log("New giveaway created:", giveaway);
+});
+
+giveaways.on("giveawayEdited", (giveaway) => {
+	console.log(`Giveaway  Edited: ${giveaway.messageId}`);
+});
+
+giveaways.on("giveawayEnded", (giveaway, winners) => {
+	console.log(`Giveaway ended! Winners: ${winners.join(", ")}`);
+});
+
+giveaways.on("userJoined", (giveaway, userId) => {
+	console.log(`User ${userId} joined giveaway: ${giveaway.messageId}`);
+});
+```
+
+## License
+
+MIT License
+
+## Contributors
+
+- **ZiBot** - Creator & Maintainer
+
+## Support
+
+For any issues or feature requests, please create an issue on the GitHub repository.
