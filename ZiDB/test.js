@@ -27,4 +27,18 @@ db.ZiGuild = createModel(db, "ZiGuild");
 	// Tìm guild
 	const guild = await db.ZiGuild.findOne({ guildId: "456" });
 	console.log(guild);
+
+	await db.ZiUser.updateOne(
+		{ userID: "12345" },
+		{
+			$set: {
+				xp: 100,
+				level: 2,
+				coin: 500,
+			},
+		},
+		{ upsert: true },
+	);
+
+	console.log(await db.ZiUser.findOne({ userID: "12345" }));
 })();
