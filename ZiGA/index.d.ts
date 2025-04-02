@@ -1,4 +1,4 @@
-import { Client, MessageCreateOptions } from "discord.js";
+import { Client, MessageCreateOptions, Channel } from "discord.js";
 import { EventEmitter } from "events";
 
 export interface Giveaway {
@@ -29,7 +29,7 @@ export class Giveaways extends EventEmitter {
 	init(): void;
 
 	createGiveaway(
-		channelId: string,
+		channel: Channel,
 		prize: string,
 		duration: number,
 		winnerCount: number,
@@ -45,7 +45,9 @@ export class Giveaways extends EventEmitter {
 		},
 	): boolean;
 
-	joinGiveaway(messageId: string, userId: string): boolean;
+	joinGiveaway(messageId: string, userId: string): number;
+
+	leaveGiveaway(messageId: string, userId: string): boolean;
 
 	fetchGiveaways(): Giveaway[];
 

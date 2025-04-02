@@ -14,14 +14,14 @@ class Giveaways extends EventEmitter {
 	}
 
 	init() {
+		this.emit("debug", "Initializing giveaways...");
 		if (this.giveawaysInterval) clearInterval(this.giveawaysInterval);
 		this.giveawaysInterval = setInterval(() => this.checkGiveaways(), this.updateInterval);
 		this.loadGiveaways();
 	}
 
-	async createGiveaway(channelId, prize, duration, winnerCount, context) {
-		const channel = this.client.channels.cache.get(channelId);
-		if (!channel) throw new Error("Kênh không tồn tại!");
+	async createGiveaway(channel, prize, duration, winnerCount, context) {
+		if (!channel) throw new Error("Channel does not exist!");
 
 		const endTime = Date.now() + duration;
 		const message = await channel.send(
@@ -32,7 +32,7 @@ class Giveaways extends EventEmitter {
 		);
 
 		const giveaway = {
-			channelId,
+			channelId: channel.id,
 			messageId: message.id,
 			prize,
 			endTime,
@@ -43,6 +43,8 @@ class Giveaways extends EventEmitter {
 		};
 		this.giveaways.push(giveaway);
 		this.emit("giveawayCreated", this.client, giveaway);
+		this.emit("debug", `Giveaway created: ${JSON.stringify(giveaway)}`);
+		this.saveGiveaways();
 		return giveaway;
 	}
 
@@ -55,21 +57,41 @@ class Giveaways extends EventEmitter {
 		if (newData.winnerCount) giveaway.winnerCount = Math.max(1, newData.winnerCount);
 
 		this.emit("giveawayEdited", giveaway);
+		this.emit("debug", `Giveaway edited: ${JSON.stringify(giveaway)}`);
 		this.saveGiveaways();
 		return true;
 	}
 
 	joinGiveaway(messageId, userId, requiredRole = null) {
 		const giveaway = this.giveaways.find((g) => g.messageId === messageId);
-		if (!giveaway || giveaway.ended || giveaway.paused) return false;
+		if (!giveaway || giveaway.ended || giveaway.paused) return -1;
 		const member = this.client.users.cache.get(userId);
-		if (requiredRole && !member.roles.cache.has(requiredRole)) return false;
+		if (requiredRole && !member.roles.cache.has(requiredRole)) return -2;
 		if (!giveaway.entries.includes(userId)) {
 			giveaway.entries.push(userId);
 			this.emit("userJoined", giveaway, userId);
+			this.emit("debug", `User ${userId} joined giveaway ${messageId}`);
+			this.saveGiveaways();
+			return 1;
+		}
+		return 0;
+	}
+
+	leaveGiveaway(messageId, userId) {
+		const giveaway = this.giveaways.find((g) => g.messageId === messageId);
+		console.log(giveaway);
+		if (!giveaway || giveaway.ended) return false;
+		const index = giveaway.entries.indexOf(userId);
+
+		if (index !== -1) {
+			giveaway.entries.splice(index, 1);
+			this.emit("userLeft", giveaway, userId);
+			this.emit("debug", `User ${userId} left giveaway ${messageId}`);
 			this.saveGiveaways();
 			return true;
 		}
+		this.emit("debug", `User ${userId} not found in giveaway ${messageId}`);
+
 		return false;
 	}
 
@@ -88,6 +110,7 @@ class Giveaways extends EventEmitter {
 		giveaway.ended = true;
 		const winners = this.pickWinners(giveaway);
 		this.emit("giveawayEnded", giveaway, winners);
+		this.emit("debug", `Giveaway ${messageId} ended with winners: ${winners}`);
 		this.giveaways = this.giveaways.filter((g) => g !== giveaway);
 		this.saveGiveaways();
 		return winners;
@@ -130,6 +153,7 @@ class Giveaways extends EventEmitter {
 	saveGiveaways() {
 		writeFile("giveaways.json", JSON.stringify(this.giveaways, null, 2)).catch(console.error);
 		this.emit("giveawaysSaved", this.giveaways);
+		this.emit("debug", "Giveaways data saved to file.");
 	}
 
 	loadGiveaways() {
@@ -139,12 +163,16 @@ class Giveaways extends EventEmitter {
 				this.giveaways.forEach((giveaway) => {
 					if (giveaway.endTime < Date.now()) giveaway.ended = true;
 				});
+				this.giveaways = this.giveaways.filter((g) => !g.ended);
 				this.emit("giveawaysLoaded", this.giveaways);
+				this.emit("debug", "Giveaways data loaded from file.");
 			})
 			.catch(() => {
 				this.giveaways = [];
 				writeFile("giveaways.json", JSON.stringify([])).catch(console.error);
+				this.emit("debug", "No giveaways file found, initialized with empty array.");
 			});
+		this.saveGiveaways();
 	}
 }
 

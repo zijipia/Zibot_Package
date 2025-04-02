@@ -1,7 +1,7 @@
 {
 	"name": "@zibot/giveaway",
-	"version": "0.0.1",
-	"description": "Give away for discord.js",
+	"version": "0.0.3",
+	"description": "Giveaway for discord bot",
 	"main": "index.js",
 	"scripts": {
 		"test": "echo \"Error: no test specified\" && exit 1"
@@ -22,7 +22,7 @@
 	"publishConfig": {
 		"access": "public"
 	},
-	"homepage": "https://github.com/zijipia/Zibot_Package#readme",
+	"homepage": "https://github.com/zijipia/Zibot_Package/tree/main/ZiGA#readme",
 	"devDependencies": {
 		"discord.js": "^14.16.3"
 	},

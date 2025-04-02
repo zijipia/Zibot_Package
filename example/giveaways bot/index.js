@@ -40,9 +40,9 @@ client.on("interactionCreate", async (interaction) => {
 
 		const row = new ActionRowBuilder().addComponents(button);
 
-		const message = await channel.send({ embeds: [embed], components: [row] });
+		const message = { embeds: [embed], components: [row] };
 
-		giveaways.createGiveaway(channel.id, prize, duration, winnerCount, message);
+		giveaways.createGiveaway(channel, prize, duration, winnerCount, message);
 		await interaction.reply({ content: "✅ Giveaway started!", ephemeral: true });
 	}
 
@@ -93,14 +93,40 @@ client.on("interactionCreate", async (interaction) => {
 
 // 📌 Xử lý nút tham gia Giveaway
 client.on("interactionCreate", async (interaction) => {
-	if (!interaction.isButton() || interaction.customId !== "join_giveaway") return;
+	if (!interaction.isButton()) return;
 
-	const joined = giveaways.joinGiveaway(interaction.message.id, interaction.user.id);
+	const userId = interaction.user.id;
+	const messageId = interaction.message.id;
 
-	await interaction.reply({
-		content: joined ? "✅ You have joined the giveaway!" : "⚠️ You are already in the giveaway!",
-		ephemeral: true,
-	});
+	if (interaction.customId === "join_giveaway") {
+		const joined = giveaways.joinGiveaway(messageId, userId);
+		await interaction.reply({
+			content:
+				joined > 0
+					? "✅ You have joined the giveaway!"
+					: joined == 0
+					? "⚠️ You are already in the giveaway!"
+					: "❌ You cannot join this giveaway!",
+			ephemeral: true,
+			components:
+				joined == 0
+					? [
+							new ActionRowBuilder().addComponents(
+								new ButtonBuilder().setCustomId("leave_giveaway").setLabel("Leave Giveaway").setStyle(ButtonStyle.Danger),
+							),
+					  ]
+					: [],
+		});
+	}
+
+	if (interaction.customId === "leave_giveaway") {
+		const mesesagerefId = interaction.message?.reference?.messageId;
+		const left = giveaways.leaveGiveaway(mesesagerefId, userId);
+		await interaction.reply({
+			content: left ? "🚪 You have left the giveaway!" : "⚠️ You are not in this giveaway!",
+			ephemeral: true,
+		});
+	}
 });
 
 // 📌 Đăng ký Slash Commands
@@ -155,3 +181,40 @@ client.on("ready", async () => {
 });
 
 client.login(process.env.DISCORD_TOKEN);
+
+process.on("unhandledRejection", (error) => {
+	console.error("Unhandled promise rejection:", error);
+});
+process.on("uncaughtException", (error) => {
+	console.error("Uncaught exception:", error);
+});
+
+// 📌 Xử lý sự kiện Giveaway
+giveaways.on("giveawayCreated", (client, giveaway) => {
+	console.log(`Giveaway started: ${giveaway.prize} in ${giveaway.channelId}`);
+});
+giveaways.on("giveawayEdited", (giveaway) => {
+	console.log(`Giveaway edited: ${giveaway.prize} in ${giveaway.channelId}`);
+});
+giveaways.on("giveawayEnded", (giveaway, winners) => {
+	console.log(`Giveaway ended: ${giveaway.prize} in ${giveaway.channelId} with winners: ${winners.join(", ")}`);
+	client.users.cache.get(winners[0])?.send(`🎉 You won the giveaway for ${giveaway.prize}!`);
+});
+giveaways.on("userJoined", (giveaway, userId) => {
+	console.log(`User ${userId} joined giveaway: ${giveaway.prize}`);
+});
+giveaways.on("userLeft", (giveaway, userId) => {
+	console.log(`User ${userId} left giveaway: ${giveaway.prize}`);
+});
+giveaways.on("giveawayPaused", (giveaway) => {
+	console.log(`Giveaway paused: ${giveaway.prize} in ${giveaway.channelId}`);
+});
+giveaways.on("giveawayUnpaused", (giveaway) => {
+	console.log(`Giveaway resumed: ${giveaway.prize} in ${giveaway.channelId}`);
+});
+giveaways.on("giveawaysSaved", (allgiveaway) => {
+	console.log(`${allgiveaway.length} Giveaway Saved`);
+});
+giveaways.on("debug", (d) => {
+	console.log(d);
+});

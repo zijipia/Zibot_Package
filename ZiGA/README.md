@@ -52,7 +52,7 @@ client.login("YOUR_BOT_TOKEN");
 
 ```javascript
 giveaways.createGiveaway(
-	"channel-id", // The channel where the giveaway will be posted
+	"channel", // The channel where the giveaway will be posted
 	"Free Nitro", // Prize name
 	60000, // Duration in milliseconds (1 minute)
 	1, // Number of winners
@@ -76,7 +76,19 @@ console.log("Giveaway updated!");
 ### Joining a Giveaway
 
 ```javascript
-giveaways.joinGiveaway("message-id", "user-id");
+const res = giveaways.joinGiveaway("message-id", "user-id", "role");
+/* res:
+-2: requiredRole
+-1: 404 or paused
+ 0: already joined
+ 1: join ok
+*/
+
+```
+### Leave a Giveaway
+
+```javascript
+giveaways.leaveGiveaway("message-id", "user-id");
 ```
 
 ### Ending a Giveaway
@@ -158,29 +170,41 @@ You can listen to various events for better control over the giveaway process:
 
 ```javascript
 giveaways.on("giveawayCreated", (client, giveaway) => {
-	console.log("New giveaway created:", giveaway);
+	console.log(`Giveaway started: ${giveaway.prize} in ${giveaway.channelId}`);
 });
-
 giveaways.on("giveawayEdited", (giveaway) => {
-	console.log(`Giveaway  Edited: ${giveaway.messageId}`);
+	console.log(`Giveaway edited: ${giveaway.prize} in ${giveaway.channelId}`);
 });
-
 giveaways.on("giveawayEnded", (giveaway, winners) => {
-	console.log(`Giveaway ended! Winners: ${winners.join(", ")}`);
+	console.log(`Giveaway ended: ${giveaway.prize} in ${giveaway.channelId} with winners: ${winners.join(", ")}`);
 });
-
 giveaways.on("userJoined", (giveaway, userId) => {
-	console.log(`User ${userId} joined giveaway: ${giveaway.messageId}`);
+	console.log(`User ${userId} joined giveaway: ${giveaway.prize}`);
+});
+giveaways.on("userLeft", (giveaway, userId) => {
+	console.log(`User ${userId} left giveaway: ${giveaway.prize}`);
+});
+giveaways.on("giveawayPaused", (giveaway) => {
+	console.log(`Giveaway paused: ${giveaway.prize} in ${giveaway.channelId}`);
+});
+giveaways.on("giveawayUnpaused", (giveaway) => {
+	console.log(`Giveaway resumed: ${giveaway.prize} in ${giveaway.channelId}`);
+});
+giveaways.on("giveawaysSaved", (allgiveaway) => {
+	console.log(`${allgiveaway.length} Giveaway Saved`);
+});
+giveaways.on("debug", (d) => {
+	console.log(d);
 });
 ```
-
+example bot: [GA bot](https://github.com/zijipia/Zibot_Package/blob/main/example/giveaways%20bot/index.js)
 ## License
 
 MIT License
 
 ## Contributors
 
-- **ZiBot** - Creator & Maintainer
+- **Ziji** - Creator & Maintainer
 
 ## Support
 
