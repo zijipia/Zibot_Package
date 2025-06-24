@@ -1,0 +1,31 @@
+{
+	"name": "@zibot/player",
+	"version": "0.0.1",
+	"main": "index.js",
+	"scripts": {
+		"test": "echo \"Error: no test specified\" && exit 1"
+	},
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/zijipia/Zibot_Package.git"
+	},
+	"keywords": [
+		"player",
+		"discord",
+		"voice"
+	],
+	"author": "Ziji",
+	"license": "ISC",
+	"bugs": {
+		"url": "https://github.com/zijipia/Zibot_Package/issues"
+	},
+	"homepage": "https://github.com/zijipia/Zibot_Package/tree/main/Player#readme",
+	"description": "",
+	"dependencies": {
+		"@discordjs/voice": "^0.18.0"
+	},
+	"devDependencies": {
+		"discord.js": "^14.16.3"
+	},
+  "module": "commonjs"
+}
