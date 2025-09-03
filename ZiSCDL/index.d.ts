@@ -1,18 +1,18 @@
 import { Readable } from "stream";
 
 // Types
-interface SearchOptions {
+export interface SearchOptions {
 	query: string;
 	limit?: number;
 	offset?: number;
 	type?: "all" | "tracks" | "playlists" | "users";
 }
 
-interface DownloadOptions {
+export interface DownloadOptions {
 	quality?: "high" | "low";
 }
 
-interface Track {
+export interface Track {
 	id: number;
 	title: string;
 	url: string;
@@ -25,13 +25,13 @@ interface Track {
 	};
 }
 
-interface Playlist {
+export interface Playlist {
 	id: number;
 	title: string;
 	tracks: Track[];
 }
 
-interface User {
+export interface User {
 	id: number;
 	username: string;
 	followers_count: number;
@@ -68,6 +68,11 @@ declare class SoundCloud {
 	 * Download a track as a stream.
 	 */
 	downloadTrack(url: string, options?: DownloadOptions): Promise<Readable>;
+
+	/**
+	 * Get related tracks for a given track (by URL or ID).
+	 */
+	getRelatedTracks(track: string | number, opts?: { limit?: number; offset?: number }): Promise<Track[]>;
 }
 
 export = SoundCloud;
